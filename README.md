@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./media/own.jpg" width="100%" style="margin-left: auto;margin-right: auto;display: block;">
+    <img src="./media/thumbnail.jpg" width="100%" style="margin-left: auto;margin-right: auto;display: block;">
 </p>
 <h1 align="center">Nao-MD ESM</h1>
 
@@ -53,7 +53,7 @@
 #### Setup bot on your Machine
 ```bash
 $ git clone https://github.com/ShirokamiRyzen/Nao-MD
-$ cd ./Nao-MD
+$ cd Nao-MD
 $ npm i
 ```
 
@@ -62,11 +62,7 @@ $ npm i
 ## Run
 
 ```bash
-node index.js
-
-or
-
-node index.js --autocleartmp
+npm start
 ```
 
 ---------
@@ -89,5 +85,7 @@ node index.js --autocleartmp
 [![ShirokamiRyzen](https://github.com/ShirokamiRyzen.png?size=100)](https://github.com/ShirokamiRyzen)
 #### Contributor
 [![ShirokamiRyzen](https://github.com/ShirokamiRyzen.png?size=100)](https://github.com/ShirokamiRyzen)
+[![KilerBots](https://github.com/KilerBots.png?size=100)](https://github.com/KilerBots)
+[![MythEclipse](https://github.com/MythEclipse.png?size=100)](https://github.com/MythEclipse)
 
 ---------

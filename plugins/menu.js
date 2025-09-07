@@ -6,12 +6,7 @@ import { promises } from 'fs'
 import { join } from 'path'
 import { xpRange } from '../lib/levelling.js'
 import moment from 'moment-timezone'
-import os from 'os'
-import jimp from 'jimp'
-import fs from 'fs'
-import PhoneNumber from 'awesome-phonenumber'
-import { uploadPomf } from '../lib/uploadImage.js'
-const { getDevice } = (await import('@adiwajshing/baileys')).default
+import { platform as getPlatform } from 'os'
 
 const defaultMenu = {
   before: `
@@ -39,23 +34,21 @@ const defaultMenu = {
 │ *Ⓟ* = Premium
 │ *Ⓛ* = Limit
 ▣────────────⬣
-  %readmore
   `.trimStart(),
-    header: '╭─────『 %category 』',
-    body: '  ⫸ %cmd %isPremium %islimit',
-    footer: '╰–––––––––––––––༓',
-    after: ``,
-  }
+  header: '╭─────『 %category 』',
+  body: '  ⫸ %cmd %isPremium %islimit',
+  footer: '╰–––––––––––––––༓',
+  after: ``,
+}
+
 let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
 
   if (m.isGroup && !global.db.data.chats[m.chat].menu) {
-    throw `Admin telah mematikan menu`;
+    throw `Admin telah mematikan menu`
   }
 
   let tags = {
     'main': 'Main',
-    // 'anonymous': 'Anonymous Chat',
-    // 'stress': 'Stress',
     'ai': 'Ai feature',
     'memfess': 'Memfess',
     'stalk': 'Stalk',
@@ -66,48 +59,34 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     'tools': 'Tools',
     'group': 'Group',
     'quotes': 'Quotes',
-    'maker': 'Maker Text Logo',
     'nulis': 'Nulis',
     'info': 'Info',
     'owner': 'Owner',
   }
 
   try {
-    // DEFAULT MENU
     let dash = global.dashmenu
     let m1 = global.dmenut
     let m2 = global.dmenub
     let m3 = global.dmenuf
     let m4 = global.dmenub2
 
-    // COMMAND MENU
     let cc = global.cmenut
     let c1 = global.cmenuh
     let c2 = global.cmenub
     let c3 = global.cmenuf
     let c4 = global.cmenua
 
-    // LOGO L P
     let lprem = global.lopr
     let llim = global.lolm
     let tag = `@${m.sender.split('@')[0]}`
-    let device = await getDevice(m.id)
 
-    //-----------TIME---------
     let ucpn = `${ucapan()}`
     let d = new Date(new Date + 3600000)
     let locale = 'id'
     let week = d.toLocaleDateString(locale, { weekday: 'long' })
-    let date = d.toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
+    let date = d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
     let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-    // d.getTimeZoneOffset()
-    // Offset -420 is 18.00
-    // Offset    0 is  0.00
-    // Offset  420 is  7.00
     let weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
     let dateIslamic = Intl.DateTimeFormat(locale + '-TN-u-ca-islamic', {
       day: 'numeric',
@@ -130,19 +109,8 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     }
     let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
-    let _mpt
-    if (process.send) {
-      process.send('uptime')
-      _mpt = await new Promise(resolve => {
-        process.once('message', resolve)
-        setTimeout(resolve, 1000)
-      }) * 1000
-    }
-    let mpt = clockString(_mpt)
+
     let usrs = db.data.users[m.sender]
-
-
-    /**************************** TIME *********************/
     let wib = moment.tz('Asia/Jakarta').format('HH:mm:ss')
     let wibh = moment.tz('Asia/Jakarta').format('HH')
     let wibm = moment.tz('Asia/Jakarta').format('mm')
@@ -151,16 +119,15 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     let wita = moment.tz('Asia/Makassar').format('HH:mm:ss')
     let wktuwib = `${wibh} H ${wibm} M ${wibs} S`
 
-    let mode = global.opts['self'] || global.opts['owneronly'] ? 'Private' : 'Publik'
+    let mode = db.data.settings[conn.user.jid].public ? 'Publik' : 'Self'
     let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {}
+
     let { age, exp, limit, level, role, registered, money } = global.db.data.users[m.sender]
     let { min, xp, max } = xpRange(level, global.multiplier)
     let name = await conn.getName(m.sender)
     let premium = global.db.data.users[m.sender].premiumTime
     let prems = `${premium > 0 ? 'Premium' : 'Free'}`
-    let platform = os.platform()
-
-    //---------------------
+    let sysPlatform = getPlatform() // ✅ Fix disini
 
     let totalreg = Object.keys(global.db.data.users).length
     let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length
@@ -174,7 +141,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
         enabled: !plugin.disabled,
       }
     })
-    
+
     let groups = {}
     for (let tag in tags) {
       groups[tag] = []
@@ -182,12 +149,14 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
         if (plugin.tags && plugin.tags.includes(tag))
           if (plugin.help) groups[tag].push(plugin)
     }
+
     conn.menu = conn.menu ? conn.menu : {}
     let before = conn.menu.before || defaultMenu.before
     let header = conn.menu.header || defaultMenu.header
     let body = conn.menu.body || defaultMenu.body
     let footer = conn.menu.footer || defaultMenu.footer
     let after = conn.menu.after || (conn.user.jid == global.conn.user.jid ? '' : `Powered by https://wa.me/${global.conn.user.jid.split`@`[0]}`) + defaultMenu.after
+
     let _text = [
       before,
       ...Object.keys(tags).map(tag => {
@@ -205,6 +174,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
       }),
       after
     ].join('\n')
+
     let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
     let replace = {
       '%': '%',
@@ -219,9 +189,10 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
       xp4levelup: max - exp,
       github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
       tag, dash, m1, m2, m3, m4, cc, c1, c2, c3, c4, lprem, llim,
-      ucpn, platform, wib, mode, _p, money, age, tag, name, prems, level, limit, name, weton, week, date, dateIslamic, time, totalreg, rtotalreg, role,
+      ucpn, platform: sysPlatform, wib, mode, _p, money, age, name, prems, level, limit, weton, week, date, dateIslamic, time, totalreg, rtotalreg, role,
       readmore: readMore
     }
+
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
 
     let fkon = {
@@ -237,33 +208,32 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
           verified: true
         }
       }
-    };
+    }
 
-    conn.relayMessage(m.chat, {
-      extendedTextMessage: {
-        text: text,
-        contextInfo: {
-          mentionedJid: [m.sender],
-          externalAdReply: {
-            title: wm,
-            mediaType: 1,
-            previewType: 0,
-            renderLargerThumbnail: true,
-            thumbnailUrl: 'https://telegra.ph/file/14a7745f434cd21e900d6.jpg',
-            sourceUrl: sgc,
-          }
-        }, mentions: [m.sender]
+    conn.sendMessage(m.chat, {
+      text: text,
+      contextInfo: {
+        mentionedJid: [m.sender],
+        externalAdReply: {
+          title: wm,
+          mediaType: 1,
+          previewType: 0,
+          renderLargerThumbnail: true,
+          thumbnailUrl: 'https://telegra.ph/file/14a7745f434cd21e900d6.jpg',
+          sourceUrl: sgc,
+        }
       }
-    }, { quoted: fkon });
+    }, { quoted: fkon })
+
   } catch (e) {
     conn.reply(m.chat, 'Maaf, menu sedang error', m)
     throw e
   }
 }
+
 handler.help = ['menu']
 handler.tags = ['main']
 handler.command = /^(allmenu|menu|help|\?)$/i
-
 handler.register = true
 handler.exp = 3
 
@@ -284,59 +254,9 @@ function clockString(ms) {
 function ucapan() {
   const time = moment.tz('Asia/Jakarta').format('HH')
   let res = "Kok Belum Tidur Kak? 🥱"
-  if (time >= 4) {
-    res = "Pagi Kak 🌄"
-  }
-  if (time >= 10) {
-    res = "Siang Kak ☀️"
-  }
-  if (time >= 15) {
-    res = "Sore Kak 🌇"
-  }
-  if (time >= 18) {
-    res = "Malam Kak 🌙"
-  }
+  if (time >= 4) res = "Pagi Kak 🌄"
+  if (time >= 10) res = "Siang Kak ☀️"
+  if (time >= 15) res = "Sore Kak 🌇"
+  if (time >= 18) res = "Malam Kak 🌙"
   return res
-}
-
-async function genProfile(conn, m) {
-  let font = await jimp.loadFont('./names.fnt'),
-    mask = await jimp.read(fs.readFileSync('./src/mask.png')),
-    border = await jimp.read(fs.readFileSync('./src/premium_border.png')),
-    welcome = await jimp.read(thumbnailUrl.getRandom()),
-    avatar = await jimp.read(await conn.profilePictureUrl(m.sender, 'image').catch(() => fs.readFileSync('./src/avatar_contact.png'))),
-    status = (await conn.fetchStatus(m.sender).catch(console.log) || {}).status?.slice(0, 30) || 'Not Detected',
-    premiumUnixTime = global.db.data.users[m.sender].premiumTime,
-    prems = `${premiumUnixTime > 0 ? 'Premium User' : 'Free User'}`;
-
-  const gmtPlus7Time = premiumUnixTime + 7 * 60 * 60 * 1000;
-
-  await avatar.resize(460, 460);
-  await mask.resize(460, 460);
-  await avatar.mask(mask);
-
-  await welcome.resize(welcome.getWidth(), welcome.getHeight());
-
-  await welcome.print(font, 550, 150, 'Name:');
-  await welcome.print(font, 800, 150, m.pushName.slice(0, 25));
-  await welcome.print(font, 550, 215, 'About:');
-  await welcome.print(font, 800, 215, status);
-  await welcome.print(font, 550, 280, 'Number:');
-  await welcome.print(font, 800, 280, PhoneNumber('+' + m.sender.split('@')[0]).getNumber('international'));
-  await welcome.print(font, 550, 400, 'Status:');
-  await welcome.print(font, 800, 400, prems);
-
-  if (premiumUnixTime > 0) {
-    const gmtPlus7DateString = new Date(gmtPlus7Time).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-    await border.resize(460, 460);
-    await welcome.print(font, 550, 460, 'Until:');
-    await welcome.print(font, 800, 460, gmtPlus7DateString);
-    await welcome.composite(border, 50, 170);
-  }
-
-  await welcome.composite(avatar, 50, 170);
-  const buffer = await welcome.getBufferAsync('image/png');
-
-  const imageUrl = await uploadPomf(buffer);
-  return imageUrl;
 }

@@ -17,7 +17,7 @@ const { name, author } = require(join(__dirname, './package.json'));
 say('Lightweight\nWhatsApp Bot', { font: 'chrome', align: 'center', gradient: ['red', 'magenta'] });
 say(`'${name}' By @${author.name || author}`, { font: 'console', align: 'center', gradient: ['red', 'magenta'] });
 
-console.log('🐾 Starting...'); 
+console.log('🐾 Starting...');
 
 var isRunning = false;
 
@@ -31,7 +31,7 @@ function start(file) {
 
   let args = [join(__dirname, file), ...process.argv.slice(2)];
   say([process.argv[0], ...args].join(' '), { font: 'console', align: 'center', gradient: ['red', 'magenta'] });
-  
+
   setupMaster({ exec: args[0], args: args.slice(1) });
   let p = fork();
 
@@ -47,7 +47,7 @@ function start(file) {
         p.send(process.uptime());
         break;
       default:
-          console.warn('[⚠️ UNRECOGNIZED MESSAGE]', data);
+        console.warn('[⚠️ UNRECOGNIZED MESSAGE]', data);
     }
   });
 
@@ -58,7 +58,7 @@ function start(file) {
       console.log('[🔄 Restarting worker due to non-zero exit code...');
       return start(file);
     }
-    
+
     watchFile(args[0], () => {
       unwatchFile(args[0]);
       start(file);
@@ -66,7 +66,7 @@ function start(file) {
   });
 
   let opts = yargs(process.argv.slice(2)).exitProcess(false).parse();
-  
+
   if (!opts['test']) {
     if (!rl.listenerCount()) {
       rl.on('line', line => {

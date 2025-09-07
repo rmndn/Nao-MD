@@ -12,7 +12,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
   m.reply(wait)
 
   const videoUrl = text
-  const apiUrl = `${APIs.ryzen}/api/downloader/ytmp3?url=${encodeURIComponent(videoUrl)}`
+  const apiUrl = `${APIs.ryzumi}/api/downloader/ytmp3?url=${encodeURIComponent(videoUrl)}`
 
   try {
     const response = await axios.get(apiUrl)
@@ -56,7 +56,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       caption,
       contextInfo: {
         externalAdReply: {
-          showAdAttribution: true,
+          //showAdAttribution: true,
           mediaType: 2,
           mediaUrl: videoUrl,
           title: title,
